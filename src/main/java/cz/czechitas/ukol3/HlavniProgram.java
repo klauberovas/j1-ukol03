@@ -13,7 +13,7 @@ public class HlavniProgram {
     public static void main(String... args) {
             Computer myComputer = new Computer();
             System.out.println(myComputer.toString());
-            myComputer.turnOn();      // Vypíše chybu, protože počítač v tuto chvíli nemá všechny povinné součásti.
+            myComputer.turnOn();      // Prints an error because the computer doesn't have all the required components at this moment.
 
             Processor myProcessor = new Processor();
             myProcessor.setSpeed(3_490_000_000L);
@@ -32,11 +32,11 @@ public class HlavniProgram {
             System.out.println(myComputer.toString());
 
             myComputer.turnOn();
-            myComputer.turnOn();      // Vypíše chybu, protože počítač už běží
+            myComputer.turnOn();      // Prints an error because the computer is already running.
             System.out.println(myComputer.toString());
             myComputer.turnOff();
 
-            myComputer.turnOff();      // Nevypíše chybu, ale nic neprovede, protože počítač už je vypnutý
+            myComputer.turnOff();      // Does not print an error, because the computer is already off.
         }
     }
 
