@@ -6,7 +6,7 @@ import cz.czechitas.ukol3.model.Memory;
 import cz.czechitas.ukol3.model.Processor;
 
 /**
- * Spouštěcí třída celého programu
+ * Entry class of the entire program
  */
 public class HlavniProgram {
 
