@@ -1,13 +1,43 @@
 package cz.czechitas.ukol3;
 
+import cz.czechitas.ukol3.model.Computer;
+import cz.czechitas.ukol3.model.Disk;
+import cz.czechitas.ukol3.model.Memory;
+import cz.czechitas.ukol3.model.Processor;
+
 /**
  * Spouštěcí třída celého programu
  */
 public class HlavniProgram {
 
     public static void main(String... args) {
-        //TODO tady bude váš kód - vytvoření instance třídy Pocitac, zapnutí, vpynutí, výpis hodnot.
-        System.out.println("Program spuštěn.");
+            Computer myComputer = new Computer();
+            System.out.println(myComputer.toString());
+            myComputer.turnOn();      // Vypíše chybu, protože počítač v tuto chvíli nemá všechny povinné součásti.
+
+            Processor myProcessor = new Processor();
+            myProcessor.setSpeed(3_490_000_000L);
+            myProcessor.setManufacturer("Apple");
+
+            Memory myMemory = new Memory();
+            myMemory.setCapacity(24_000_000_000L);
+
+            Disk myDisk = new Disk();
+            myDisk.setCapacity(994_662_584_320L);
+
+            myComputer.setCpu(myProcessor);
+            myComputer.setRam(myMemory);
+            myComputer.setHardDisk(myDisk);
+
+            System.out.println(myComputer.toString());
+
+            myComputer.turnOn();
+            myComputer.turnOn();      // Vypíše chybu, protože počítač už běží
+            System.out.println(myComputer.toString());
+            myComputer.turnOff();
+
+            myComputer.turnOff();      // Nevypíše chybu, ale nic neprovede, protože počítač už je vypnutý
+        }
     }
 
-}
+
