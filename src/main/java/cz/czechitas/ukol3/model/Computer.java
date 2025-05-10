@@ -7,7 +7,8 @@ public class Computer {
 
     private Processor cpu;
     private Memory ram;
-    private Disk hardDisk;
+    private Disk primaryDisk;
+    private Disk secondaryDisk;
 
     public boolean isOn() {
         return isOn;
@@ -33,12 +34,20 @@ public class Computer {
         this.ram = ram;
     }
 
-    public Disk getHardDisk() {
-        return hardDisk;
+    public Disk getPrimaryDisk() {
+        return primaryDisk;
     }
 
-    public void setHardDisk(Disk hardDisk) {
-        this.hardDisk = hardDisk;
+    public void setPrimaryDisk(Disk primaryDisk) {
+        this.primaryDisk = primaryDisk;
+    }
+
+    public Disk getSecondaryDisk() {
+        return secondaryDisk;
+    }
+
+    public void setSecondaryDisk(Disk secondaryDisk) {
+        this.secondaryDisk = secondaryDisk;
     }
 
     /**
@@ -48,7 +57,7 @@ public class Computer {
      */
 
     public void turnOn() {
-        if (ram != null && hardDisk != null && cpu != null) {
+        if (ram != null && primaryDisk != null && cpu != null) {
             if (!isOn) {
                 this.isOn = true;
                 System.out.println("Computer is on.");
@@ -57,7 +66,6 @@ public class Computer {
             }
         } else {
             System.err.println("The computer can't be turned on.");
-            return;
         }
     }
 
@@ -74,34 +82,57 @@ public class Computer {
 
     /**
      * Attempts to create a file of the given size on the hard disk.
-     * Works only if the computer is turned on.
-     * Prints an error if the new space used would exceed disk capacity.
+     * This action is only possible if the computer is turned on.
+     * If there is enough free space on the primary disk, the file is saved there.
+     * Otherwise, if the secondary disk exists and has enough free space, the file is saved there.
+     * If there is not enough space on either disk, an error message is printed.
      */
     public void createFileOfSize(long size) {
         if (!isOn) {
             System.err.println("The computer must be on to create a file.");
             return;
+        }
+        if (primaryDisk.getFreeSpace() >= size) {
+            primaryDisk.setSpaceUsed(primaryDisk.getSpaceUsed() + size);
+            System.out.println(MessageFormat.format("File created on primary disk. Size: {0} B.", size));
+        } else if (secondaryDisk != null && secondaryDisk.getFreeSpace() >= size) {
+            secondaryDisk.setSpaceUsed(secondaryDisk.getSpaceUsed() + size);
+            System.out.println(MessageFormat.format("File created on secondary disk. Size: {0} B.", size));
         } else {
-            long currentSpaceUsed = hardDisk.getSpaceUsed();
-            long newSpaceUsed = currentSpaceUsed + size;
-            hardDisk.setSpaceUsed(newSpaceUsed);
-            System.out.println(MessageFormat.format("File created. Size: {0} B.", size));
+            System.err.println("Not enough space on either disk to create the file.");
         }
     }
 
     /**
-     * Attempts to remove files of the given size from the hard disk.
-     * Works only if the computer is turned on.
-     * Prints an error if the size to remove exceeds the used space.
+     * Attempts to remove a file of the give size from the disks.
+     * This action is only possible if the computer is turned on.
+     * If the primary disk has enough used space, the file is removed from it.
+     * Otherwise, it attempts to remove the remaining size from the secondary disk.
+     * If the combined used space of both disks is insufficient, an error is printed.
      */
-    public void removeFileOfSize(long size) {
+    public void removeFilesOfSize(long size) {
         if (!isOn) {
             System.err.println("The computer must be on to remove a file.");
+            return;
+        }
+
+        long primaryUsed = primaryDisk.getSpaceUsed();
+        if (primaryUsed >= size) {
+            primaryDisk.setSpaceUsed(primaryUsed - size);
+            System.out.println(MessageFormat.format("Files removed on primary disk. Size: {0} B.", size));
+        } else if (secondaryDisk != null) {
+            long secondaryUsed = secondaryDisk.getSpaceUsed();
+            long totalUsed = primaryUsed + secondaryUsed;
+
+            if (totalUsed >= size) {
+                primaryDisk.setSpaceUsed(0);
+                secondaryDisk.setSpaceUsed(secondaryUsed - (size - primaryUsed));
+                System.out.println(MessageFormat.format("Files removed from both disks. Size: {0} B.", size));
+            } else {
+                System.err.println("Not enough used space to remove the requested file size.");
+            }
         } else {
-            long currentSpaceUsed = hardDisk.getSpaceUsed();
-            long newSpaceUsed = currentSpaceUsed - size;
-            hardDisk.setSpaceUsed(newSpaceUsed);
-            System.out.println(MessageFormat.format("File removed. Size: {0} B.", size));
+            System.err.println("Not enough space to remove the requested file.");
         }
     }
 
@@ -114,7 +145,8 @@ public class Computer {
                 "isOn=" + isOn +
                 ", cpu=" + cpu +
                 ", ram=" + ram +
-                ", hardDisk=" + hardDisk +
+                ", primaryDisk=" + primaryDisk +
+                ", secondaryDisk=" + secondaryDisk +
                 '}';
     }
 }

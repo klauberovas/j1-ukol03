@@ -33,6 +33,10 @@ public class Disk {
         }
     }
 
+    public long getFreeSpace() {
+        return capacity - spaceUsed;
+    }
+
     /**
      * Returns a string representation of the Disk object, including its capacity and used space in bytes.
      */
